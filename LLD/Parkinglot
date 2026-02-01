@@ -1,0 +1,95 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Vehicle {
+public:
+    string type;
+    int regNo;
+    string color;
+};
+
+class Loader : public Vehicle {
+public:
+    Loader(int r, string c) {
+        type = "Loader";
+        regNo = r;
+        color = c;
+    }
+};
+
+class Car : public Vehicle {
+public:
+    Car(int r, string c) {
+        type = "Car";
+        regNo = r;
+        color = c;
+    }
+};
+
+
+
+class Ticket {
+public:
+    string parkingId;
+    unordered_set<string> tickets;
+
+    Ticket(string id) {
+        parkingId = id;
+    }
+
+    void generate(int floor, int slot) {
+        string t = parkingId + to_string(floor) + to_string(slot);
+        tickets.insert(t);
+    }
+};
+
+
+
+class ParkingLot {
+public:
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> loaderSlots;
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> carSlots;
+
+    int floors;
+    int slotsPerFloor;
+    string lotId;
+
+    Ticket* ticketObj;
+
+    ParkingLot(string id, int f, int s) {
+        lotId = id;
+        floors = f;
+        slotsPerFloor = s;
+
+        ticketObj = new Ticket(id);
+
+        for (int i = 1; i <= floors; i++) {
+            loaderSlots.push({i, 1});   // slot 1 for loader
+
+            for (int j = 2; j <= slotsPerFloor; j++) {
+                carSlots.push({i, j});  // remaining slots for car
+            }
+        }
+    }
+
+    void parkVehicle(Vehicle* v) {
+        if (v->type == "Loader") {
+            if (!loaderSlots.empty()) {
+                auto p = loaderSlots.top();
+                loaderSlots.pop();
+                ticketObj->generate(p.first, p.second);
+            } else {
+                cout << "No space for Loader\n";
+            }
+        }
+        else if (v->type == "Car") {
+            if (!carSlots.empty()) {
+                auto p = carSlots.top();
+                carSlots.pop();
+                ticketObj->generate(p.first, p.second);
+            } else {
+                cout << "No space for Car\n";
+            }
+        }
+    }
+};
