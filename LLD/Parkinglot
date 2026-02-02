@@ -73,10 +73,14 @@ public:
     }
 
     void parkVehicle(Vehicle* v) {
+
+          // Decide which slot list to use based on vehicle type
         if (v->type == "Loader") {
             if (!loaderSlots.empty()) {
+
+          // Take the nearest available loader slot
                 auto p = loaderSlots.top();
-                loaderSlots.pop();
+                loaderSlots.pop(); // slot occupied
                 ticketObj->generate(p.first, p.second);
             } else {
                 cout << "No space for Loader\n";
