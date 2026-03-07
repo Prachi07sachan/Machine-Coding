@@ -1,79 +1,58 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
 using namespace std;
 
-class Database {
-
-private:
-    // arrays 
-    string shortUrl[100];
-    string longUrl[100];
-
-    int count;  
-
+class Item {
 public:
+    int id;
+    string name;
+    int price;
+    int qty;
 
-
-    Database() {
-        count = 0;
-    }
-
-    // function to store short and long URL
-    void store(string s, string l) {
-        shortUrl[count] = s;   
-        longUrl[count] = l;    
-        count++;               
-    }
-
-    // function to get original URL from short code
-    string get(string s) {
-
-        for(int i=0; i<count; i++) {
-            if(shortUrl[i] == s) {
-                return longUrl[i];  
-            }
-        }
-
-        return ""; // else empty not found
+    Item(int i, string n, int p, int q) {
+        id = i;
+        name = n;
+        price = p;
+        qty = q;
     }
 };
 
-class UrlShortener {
-
-private:
-    Database db; 
-
-    int id;     
-
+class VendingMachine {
 public:
+    vector<Item> items;
 
-    
-    UrlShortener() {
-        id = 1;
+    void addItem(Item i) {
+        items.push_back(i);
     }
 
-    // function to create short code
-    string shorten(string longUrl) {
-
-        // convert number to string -> "1","2"......
-        string code = to_string(id);
-
-        id++;  
-
-        // store mapping in database
-        db.store(code, longUrl);
-
-        return code;
+    void showItems() {
+        for (auto i : items) {
+            cout << i.id << " "
+                 << i.name
+                 << " Price:" << i.price
+                 << " Qty:" << i.qty << endl;
+        }
     }
 
-    // function to get original URL
-    string getOriginal(string code) {
+    void buy(int id) {
+        for (auto &i : items) {
+            if (i.id == id) {
 
-        string ans = db.get(code);
+                if (i.qty == 0) {
+                    cout << "Out of Stock\n";
+                    return;
+                }
 
-        if(ans == "") {
-            return "Not found";
+                cout << "Pay " << i.price << " via UPI\n";
+                cout << "Payment Successful\n";
+
+                cout << "Dispensing " << i.name << endl;
+
+                i.qty--;   // update inventory
+                return;
+            }
         }
 
-        return ans; 
+        cout << "Invalid Item\n";
     }
 };
