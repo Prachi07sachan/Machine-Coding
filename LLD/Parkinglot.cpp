@@ -35,77 +35,83 @@ class ParkingLot
 public:
     vector<ParkingSpot> s;
 
+    // Constructor
     ParkingLot(int n)
     {
-        for(int i = 1; i <= n; i++)
+        for (int i = 1; i <= n; i++)
         {
             s.push_back(ParkingSpot(i));
         }
     }
 
-    // Function to park vehicle
-    void parkVehicle(V* v)
+    // Park Vehicle
+    void parkVehicle(string number, string type)
     {
-        for(int i = 0; i < s.size(); i++)
+        for (auto &spot : s)
         {
-            if(!s[i].occupied)
+            if (!spot.occupied)
             {
-                s[i].occupied = true;
-                s[i].vehicle = v;
+                spot.vehicle = new V(number, type);
+                spot.occupied = true;
 
-                cout<<"Vehicle Number: "<<v->number<<endl;
-                cout<<"Vehicle Type: "<<v->type<<endl;
-                cout<<"Parked at Spot: "<<s[i].id<<endl<<endl;
-
+                cout << "Vehicle parked at spot " << spot.id << endl;
                 return;
             }
         }
-
-        cout<<"Parking Full"<<endl<<endl;
+        cout << "Parking Full!\n";
     }
 
-    // removeVehicle() implementation
+    // Remove Vehicle
     void removeVehicle(string number)
     {
-        for(int i = 0; i < s.size(); i++)
+        for (auto &spot : s)
         {
-            if(s[i].occupied && s[i].vehicle->number == number)
+            if (spot.occupied && spot.vehicle->number == number)
             {
-                cout<<"Vehicle Number: "<<s[i].vehicle->number<<endl;
-                cout<<"Leaving Spot: "<<s[i].id<<endl;
+                spot.occupied = false;
+                delete spot.vehicle;
+                spot.vehicle = NULL;
 
-                // mark slot empty
-                s[i].occupied = false;
-                s[i].vehicle = NULL;
-
-                cout<<"Spot "<<s[i].id<<" is now free and available for new vehicles"<<endl<<endl;
-
+                cout << "Vehicle removed from spot " << spot.id << endl;
                 return;
             }
         }
+        cout << "Vehicle not found!\n";
+    }
 
-        cout<<"Vehicle Not Found"<<endl<<endl;
+    // Display Status
+    void displayStatus()
+    {
+        cout << "\nParking Lot Status:\n";
+
+        for (auto &spot : s)
+        {
+            if (spot.occupied)
+            {
+                cout << "Spot " << spot.id << " -> Occupied ("
+                     << spot.vehicle->number << ", "
+                     << spot.vehicle->type << ")\n";
+            }
+            else
+            {
+                cout << "Spot " << spot.id << " -> Free\n";
+            }
+        }
     }
 };
 
 int main()
 {
-    ParkingLot p(5);
+    ParkingLot p(3);
 
-    V v1("UP78","Car");
-    V v2("UP34","Bike");
-    V v3("UP65","Truck");
+    p.parkVehicle("UP65AB1234", "Car");
+    p.parkVehicle("UP65XY5678", "Bike");
 
-    p.parkVehicle(&v1);
-    p.parkVehicle(&v2);
-    p.parkVehicle(&v3);
+    p.displayStatus();
 
-    // vehicle leaves
-    p.removeVehicle("UP34");
+    p.removeVehicle("UP65AB1234");
 
-    // new vehicle can park in freed slot
-    V v4("UP90","Car");
-    p.parkVehicle(&v4);
+    p.displayStatus();
 
     return 0;
 }
