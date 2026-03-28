@@ -1,76 +1,70 @@
-#include<iostream>
-#include<vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-
-class Book
-{
+class Book {
 public:
+    int id;
     string title;
     string author;
-    bool issued;
+    bool avail;
 
-    Book(string t, string a)
-    {
+    Book(int i, string t, string a) {
+        id = i;
         title = t;
         author = a;
-        issued = false;
+        avail = true;
     }
 };
 
-class Library
-{
+class Member {
 public:
-    vector<Book> books;   
+    int id;
+    string name;
+    unordered_set<int> issued;
 
+    Member(int i, string n) {
+        id = i;
+        name = n;
+    }
+};
 
-    void addBook(string title, string author)
-    {
-        books.push_back(Book(title, author));
-        cout << "Book added: " << title << endl;
+class Library {
+public:
+    unordered_map<int, Book*> books;
+    unordered_map<int, Member*> members;
+
+    void addBook(Book* b) {
+        books[b->id] = b;
     }
 
-
-    void issueBook(string title)
-    {
-        for (auto &b : books)
-        {
-            if (b.title == title && b.issued == false)
-            {
-                b.issued = true;
-                cout << "Book issued: " << title << endl;
-                return;
-            }
-        }
-        cout << "Book not available!\n";
+    void addMember(Member* m) {
+        members[m->id] = m;
     }
 
-    
-    void returnBook(string title)
-    {
-        for (auto &b : books)
-        {
-            if (b.title == title && b.issued == true)
-            {
-                b.issued = false;
-                cout << "Book returned: " << title << endl;
-                return;
-            }
+    void issueBook(int bid, int mid) {
+        if (!books.count(bid) || !members.count(mid)) return;
+
+        Book* b = books[bid];
+        Member* m = members[mid];
+
+        if (!b->avail) {
+            cout << "Book not available\n";
+            return;
         }
-        cout << "Book not found!\n";
+
+        b->avail = false;
+        m->issued.insert(bid);
     }
 
-    
-    void displayBooks()
-    {
-        cout << "\nLibrary Status:\n";
+    void returnBook(int bid, int mid) {
+        if (!books.count(bid) || !members.count(mid)) return;
 
-        for (auto &b : books)
-        {
-            if (b.issued)
-                cout << b.title << " -> Issued\n";
-            else
-                cout << b.title << " -> Available\n";
-        }
+        Book* b = books[bid];
+        Member* m = members[mid];
+
+        if (!m->issued.count(bid)) return;
+
+        b->avail = true;
+        m->issued.erase(bid);
     }
 };
